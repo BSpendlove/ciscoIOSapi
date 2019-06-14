@@ -1,0 +1,11 @@
+Value Required VLAN_ID (\d+)
+Value PRIORITY (\d+)
+Value BRIDGE_MAC ([0-9a-fA-f]{4}.[0-9a-fA-f]{4}.[0-9a-fA-f]{4})
+Value HELLO_TIMER (\d+)
+Value MAX_AGE (\d+)
+Value FWD_DELAY (\d+)
+Value PROTOCOL (\w+)
+
+Start
+  ^VLAN(0*)${VLAN_ID}\s+\d+\s+\(${PRIORITY},\s+\d+\)\s+${BRIDGE_MAC}\s+${HELLO_TIMER}\s+${MAX_AGE}\s+${FWD_DELAY}\s+${PROTOCOL} -> Continue.Record
+  ^MST${VLAN_ID}\s+\d+\s+\(${PRIORITY},\s+\d+\)\s+${BRIDGE_MAC}\s+${HELLO_TIMER}\s+${MAX_AGE}\s+${FWD_DELAY}\s+${PROTOCOL} -> Continue

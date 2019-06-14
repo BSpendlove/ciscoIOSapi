@@ -1,0 +1,24 @@
+Value Required NETWORK (\d+\.\d+\.\d+\.\d+\/(\d+)|\w+\.\w+\.\w+)
+Value VERSION (\d+)
+Value AVAILABLE_PATHS (\d+)
+Value BEST_PATH (\d+)
+Value TABLE (.*)
+Value ADVERTISED_UPDATE_GROUPS (\d+)
+Value ADVERTISED_VIA_AS (\d+|\w+)
+Value NETWORK_VIA ((\d+\.\d+\.\d+\.\d+|\w+\.\w+\.\w+)\s+from\s+(\d+\.\d+\.\d+\.\d+|\w+\.\w+\.\w+)\s+\((\d+\.\d+\.\d+\.\d+|\w+\.\w+\.\w+)\))
+Value ORIGIN (\w+)
+Value METRIC (\d+)
+Value LOCALPREF (\d+)
+Value WEIGHT (\d+)
+Value VALID (\w+)
+Value ROUTE_SOURCE (\w+)
+
+Start
+  ^BGP\s+routing\s+table\s+entry\s+for\s+${NETWORK},\s+version\s+${VERSION}.*
+  ^Paths:\s+\(${AVAILABLE_PATHS}\s+available,\s+best\s+\#${BEST_PATH},\s+table\s+${TABLE}\)$$
+  ^\s+Not\s+advertised\s+to\s+any\s+peer\s+${ADVERTISED_VIA_AS}$$ -> Continue
+  ^\s+Advertised\s+to\s+update-groups:\s+${ADVERTISED_UPDATE_GROUPS}\s+${ADVERTISED_VIA_AS}$$ -> Continue
+  ^\s+${NETWORK_VIA}
+  ^\s+Origin\s+${ORIGIN},\s+metric\s+${METRIC},\s+localpref\s+${LOCALPREF},\s+${VALID},\s+${ROUTE_SOURCE}(,\s+best|,\s+) -> Continue
+  ^\s+Origin\s+${ORIGIN},\s+metric\s+${METRIC},\s+localpref\s+${LOCALPREF},\s+weight\s+${WEIGHT},\s+${VALID},\s+${ROUTE_SOURCE},\s+.* -> Continue
+  

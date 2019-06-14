@@ -1,0 +1,70 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>087feba8-6e19-459a-9748-ac57db69e90b</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>bcpiosmanager\example.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>IOSManager</Name>
+    <RootNamespace>IOSManager</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="bcpiosmanager\bcpIOSapi\controllers\controller_cdp.py" />
+    <Compile Include="bcpiosmanager\bcpIOSapi\controllers\controller_acl.py" />
+    <Compile Include="bcpiosmanager\bcpIOSapi\controllers\controller_stp.py" />
+    <Compile Include="bcpiosmanager\bcpIOSapi\controllers\controller_vlan.py" />
+    <Compile Include="bcpiosmanager\bcpIOSapi\controllers\controller_users.py" />
+    <Compile Include="bcpiosmanager\bcpIOSapi\controllers\controller_system.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="bcpiosmanager\example.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="bcpiosmanager\setup.py" />
+    <Compile Include="bcpiosmanager\bcpIOSapi\controllers\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="bcpiosmanager\bcpIOSapi\iosapi.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="bcpiosmanager\bcpIOSapi\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bcpiosmanager\" />
+    <Folder Include="bcpiosmanager\bcpIOSapi\" />
+    <Folder Include="bcpiosmanager\bcpIOSapi\controllers\" />
+    <Folder Include="bcpiosmanager\bcpIOSapi\templates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_access_lists.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_stp_bridge.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_local_users.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_cdp_neighbors_detail.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_hosts.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_ip_bgp.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_ip_bgp_specific.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_version.template" />
+    <Content Include="bcpiosmanager\bcpIOSapi\templates\cisco_ios_show_vlan.template" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>

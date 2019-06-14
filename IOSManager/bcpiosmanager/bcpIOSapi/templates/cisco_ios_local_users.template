@@ -1,0 +1,9 @@
+Value Required USERNAME (.*)
+Value PASSWORD_TYPE (password|secret)
+Value PASSWORD (.*)
+Value PASSWORD_LEVEL ([0-9])
+Value PRIV_LEVEL ([0-9]|[1][0-5])
+
+Start
+  ^username\s+${USERNAME}\s+${PASSWORD_TYPE}\s+${PASSWORD_LEVEL}\s+${PASSWORD}$$ -> Continue.Record
+  ^username\s+${USERNAME}\s+privilege\s+${PRIV_LEVEL}\s+${PASSWORD_TYPE}\s+${PASSWORD_LEVEL}\s+${PASSWORD}$$ -> Continue

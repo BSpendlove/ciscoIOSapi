@@ -1,0 +1,10 @@
+Value LOOKUP_VIEW (\w+)
+Value Required DEFAULT_DOMAIN (.*)
+Value SERVICE (.*)
+Value NAME_SERVERS (.*)
+
+Start
+  ^Name\s+lookup\s+view:\s+${LOOKUP_VIEW}$$
+  ^Default\s+domain\s+is\s+${DEFAULT_DOMAIN}$$ -> Continue
+  ^Name\/address\s+lookup\s+uses\s+${SERVICE} -> Continue
+  ^Name\s+servers\s+are\s+${NAME_SERVERS} -> Continue
