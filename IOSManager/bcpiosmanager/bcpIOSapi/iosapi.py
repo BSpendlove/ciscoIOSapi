@@ -8,7 +8,7 @@ from netmiko import ConnectHandler
 from netmiko import NetMikoAuthenticationException, NetMikoTimeoutException
 
 class IOSAPI(object):
-    def __init__(self, ip, username, password, port=22, secret='', debug_mode=0):
+    def __init__(self, deivce_driver='cisco_ios', ip='', username='', password='', secret='',port=22, debug_mode=False):
         self.ip = ip
         self.username = username
         self.password = password
@@ -16,7 +16,7 @@ class IOSAPI(object):
         self.debug_mode = debug_mode
 
         details = {
-            'device_type' : 'cisco_ios',
+            'device_type' : device_driver,
             'ip' : ip,
             'username' : username,
             'password' : password,
@@ -31,8 +31,14 @@ class IOSAPI(object):
         else:
             details['secret'] = secret
 
-        self.netmiko_session = self.create_session(details)
-        self.bcp_enable(self.netmiko_session)
+        try:
+            self.netmiko_session = self.create_session(details)
+
+            if self.netmiko_session:
+                self.bcp_enable(self.netmiko_session)
+        except:
+
+            return
 
     def bcp_log(self, type='warning', Logmessage=''):
         with open('bcp.log','a') as file:
@@ -43,18 +49,20 @@ class IOSAPI(object):
         try:
             session = ConnectHandler(**netmiko_dict)
             self.bcp_log("info", "(%s) create_session() : Successful connection to device %s on port: %s" %(__name__, netmiko_dict['ip'], netmiko_dict['port']))
-
             return(session)
+
         except (NetMikoAuthenticationException, NetMikoTimeoutException) as error:
             self.bcp_log("info", "(%s) create_session() : Failed connection to device %s on port: %s - Reason: %s" %(__name__, netmiko_dict['ip'], netmiko_dict['port'], error))
             print("Netmiko Error: %s" %(error))
+            return
 
     def bcp_enable(self, session):
         try:
             output = session.enable()
             self.bcp_log("info", "(%s) bcp_enable() : Successfully entered enable mode" %(__name__))
-        except EOFError as error:
-            self.bcp_log("info", "(%s) bcp_enable() : Error entering enable mode - %s" %(__name__, error))
+        except:
+            self.bcp_log("info", "(%s) bcp_enable() : Error entering enable mode" %(__name__))
+            return
 
     def bcp_find_prompt(self, session):
         return(session.find_prompt())

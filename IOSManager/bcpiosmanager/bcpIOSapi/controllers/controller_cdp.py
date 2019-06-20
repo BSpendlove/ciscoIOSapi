@@ -38,6 +38,24 @@ class CdpAPI(object):
             self.iosapi.bcp_log("info", "(%s) set_cdp_timer() : Attempting to set CDP timer" %(__name__))
             return(output)
 
+    def set_cdp_neighbors_description(self, description_start='', padding_text=''):
+        cdp_neighbors = self.get_cdp_neighbors_detail()
+
+        commands_sent = []
+
+        for neighbor in cdp_neighbors:
+            local_interface = neighbor['local_port']
+            remote_interface = neighbor['remote_port']
+            remote_host = neighbor['destination_host']
+
+            format_description = '{0} {1} {2} ({3}) {0}'.format(padding_text, description_start, remote_host, remote_interface)
+            cmds = ['interface %s' %(local_interface), 'description ' + format_description]
+            output = self.iosapi.bcp_send_config_command(self.iosapi.netmiko_session, cmds)
+            self.iosapi.bcp_log("info", "(%s) set_cdp_neighbors_description() : Attempting to set interface %s description" %(__name__, local_interface))
+            commands_sent.append(output)
+
+        return(commands_sent)
+
     def get_cdp_neighbors_detail(self):
         cmd = 'show cdp neighbors detail'
         output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
