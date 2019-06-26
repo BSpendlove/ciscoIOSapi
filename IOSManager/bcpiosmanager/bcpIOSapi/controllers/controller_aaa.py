@@ -121,3 +121,11 @@ class AaaAPI(object):
             return
         else:
             return(local_users)
+
+    # Radius and Tacacs+ Commands
+    # radius-server host {hostname | ip-address} [auth-port port-number] [acct-port port-number] [timeout seconds] [retransmit retries] [key string] [alias{hostname | ip-address}]
+    # Above command is deprecated in IOS 15.2, use:
+    # radius-server {name}
+    # 
+    # Tacacs Config
+    # tacacs-server host host-name [port integer] [timeout integer] [key string] [single-connection] [nat]

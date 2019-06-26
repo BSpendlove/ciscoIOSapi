@@ -1,0 +1,7 @@
+setup.py
+bcpIOSapi/__init__.py
+bcpIOSapi/iosapi.py
+bcpIOSapi.egg-info/PKG-INFO
+bcpIOSapi.egg-info/SOURCES.txt
+bcpIOSapi.egg-info/dependency_links.txt
+bcpIOSapi.egg-info/top_level.txt

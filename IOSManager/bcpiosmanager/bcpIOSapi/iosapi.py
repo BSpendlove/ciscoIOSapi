@@ -8,7 +8,8 @@ from netmiko import ConnectHandler
 from netmiko import NetMikoAuthenticationException, NetMikoTimeoutException
 
 class IOSAPI(object):
-    def __init__(self, deivce_driver='cisco_ios', ip='', username='', password='', secret='',port=22, debug_mode=False):
+    def __init__(self, device_driver='cisco_ios', ip='', username='', password='', secret='',port=22, debug_mode=False):
+        self.device_driver = device_driver
         self.ip = ip
         self.username = username
         self.password = password
@@ -68,20 +69,23 @@ class IOSAPI(object):
         return(session.find_prompt())
 
     def bcp_send_command(self, session, command):
-        output = session.send_command(command)
+        if session:
+            output = session.send_command(command)
 
-        if self.debug_mode:
-            self.bcp_log("debug", "(%s) bcp_send_command() : Command sent - %s" %(__name__, command))
+            if self.debug_mode:
+                self.bcp_log("debug", "(%s) bcp_send_command() : Command sent - %s" %(__name__, command))
 
-        if "Invalid input detected" in output:
-            self.bcp_log("info", "(%s) bcp_send_command() : Invalid input detected" %(__name__))
-            return("Invalid input detected...")
+            if "Invalid input detected" in output:
+                self.bcp_log("info", "(%s) bcp_send_command() : Invalid input detected" %(__name__))
+                return("Invalid input detected...")
 
-        if "Command rejected:" in output:
-            self.bcp_log("info", "(%s) bcp_send_command() : Command rejected" %(__name__))
-            return("Invalid input detected...")
+            if "Command rejected:" in output:
+                self.bcp_log("info", "(%s) bcp_send_command() : Command rejected" %(__name__))
+                return("Invalid input detected...")
 
-        return(output)
+            return(output)
+        else:
+            self.bcp_log("info", "(%s) bcp_send_command() : Unable to send command" %(__name__))
 
     def bcp_send_config_command(self, session, command):
         output = session.send_config_set(command)
