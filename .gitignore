@@ -259,3 +259,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/IOSManager/bcpiosmanager/bcpIOSapi.egg-info/top_level.txt
+/IOSManager/bcpiosmanager/bcpIOSapi.egg-info/SOURCES.txt
+/IOSManager/bcpiosmanager/bcpIOSapi.egg-info/PKG-INFO
+/IOSManager/bcpiosmanager/bcpIOSapi.egg-info/dependency_links.txt
+/IOSManager/bcpiosmanager/bcpIOSapi.egg-info

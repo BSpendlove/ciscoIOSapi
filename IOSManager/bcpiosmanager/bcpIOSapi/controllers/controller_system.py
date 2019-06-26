@@ -36,10 +36,16 @@ class SystemAPI(object):
     def get_hostname(self):
         output = self.iosapi.bcp_find_prompt(self.iosapi.netmiko_session)
         self.iosapi.bcp_log("info", "(%s) get_hostname() : Attempting to get hostname" %(__name__))
-        return(output[:-1])
+        return(output[:-1]) #Removes either > or # from the current prompt
+
+    def get_fqdn_name(self):
+        hostname = self.get_hostname()
+        domain_name = self.get_ip_domain_name()
+
+        return("%s.%s" %(hostname, domain_name))
 
     def get_ip_domain_name(self):
-        cmd = 'show host'
+        cmd = 'show host' #Not supported command on older IOS below 12.something
         output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
         self.iosapi.bcp_log("info", "(%s) get_ip_domain_name() : Attempting to get IP domain name" %(__name__))
 

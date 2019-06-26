@@ -1,5 +1,5 @@
 from bcpIOSapi.iosapi import IOSAPI
-from ciscoconfparse import CiscoConfParse
+#from ciscoconfparse import CiscoConfParse Doesn't work with Python 3.7...
 
 class InterfaceAPI(object):
     def __init__(self, iosapi=None):
@@ -55,6 +55,7 @@ class InterfaceAPI(object):
         self.iosapi.bcp_log("info", "(%s) get_interfaces() : Attempting to run show interfaces" %(__name__))
         return(self.iosapi.textfsm_extractor('cisco_ios_show_interfaces.template', output))
 
+    '''
     def get_interfaces_config(self):
         dict_interfaces = {}
         list_interface_config = []
@@ -77,6 +78,7 @@ class InterfaceAPI(object):
             dict_interfaces[interface['interface']] = list_interface_config
 
         return(dict_interfaces)
+    '''
 
     def get_interfaces_description(self):
         cmd = 'show interfaces description'

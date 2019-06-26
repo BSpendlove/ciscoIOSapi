@@ -62,7 +62,7 @@ class StpAPI(object):
         allowed_priorities = [0, 4096, 8192, 12288, 16384, 20480, 24576, 28672,
                              32768, 36864, 40960, 45046, 49152, 53248, 57344, 61440]
 
-        if priority in allowed_priorites:
+        if priority in allowed_priorities:
             cmd = 'spanning-tree vlan %s priority %s' %(vlan, priority)
             output = self.iosapi.bcp_send_config_command(self.iosapi.netmiko_session, cmd)
             self.iosapi.bcp_log("info", "(%s) set_stp_vlan_pirority() : Setting VLAN %s priority to %s" %(__name__, vlan, priority))
