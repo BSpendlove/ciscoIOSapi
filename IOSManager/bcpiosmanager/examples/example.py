@@ -3,10 +3,10 @@ from bcpIOSapi import InterfaceAPI
 
 from pprint import pprint
 
-devices = ['bspendlove.ddns.net']
+devices = ['192.168.64.141', '192.168.64.142']
 
 for device in devices:
-    api = IOSAPI('cisco_ios', device, 'cisco', '5B7sr00iqH', '5B7sr00iqH', 22)
+    api = IOSAPI('cisco_ios', device, 'cisco', 'cisco', 'cisco', 22)
 
     if api:
         int_api = InterfaceAPI(api)
