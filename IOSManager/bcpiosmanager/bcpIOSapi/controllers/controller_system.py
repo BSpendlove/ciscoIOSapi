@@ -21,7 +21,7 @@ class SystemAPI(object):
         return(output)
 
     #Banner function needs to be revised - Plan is to provide a range of templates instead of just pasting a template
-    def set_banner_motd(self, message):
+    def set_banner_motd(self, message=''):
         if not message:
             message = '''
     UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED
@@ -36,7 +36,7 @@ class SystemAPI(object):
     def get_hostname(self):
         output = self.iosapi.bcp_find_prompt(self.iosapi.netmiko_session)
         self.iosapi.bcp_log("info", "(%s) get_hostname() : Attempting to get hostname" %(__name__))
-        return(output[:-1]) #Removes either > or # from the current prompt
+        return(output[:-1]) #Removes either > or # from the current prompt, could also use .replace()
 
     def get_fqdn_name(self):
         hostname = self.get_hostname()
@@ -52,7 +52,7 @@ class SystemAPI(object):
         if "Invalid input detected" in output:
             cmd = 'show run | include ip domain-name'
             output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
-            return(output)
+            return(output.replace('ip domain-name ',''))
         else:
             return(self.iosapi.textfsm_extractor('cisco_ios_show_hosts.template', output)[0]['default_domain'])
 

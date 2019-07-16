@@ -10,10 +10,10 @@ from bcpIOSapi import VlanAPI
 
 from pprint import pprint
 
-devices = ['10.198.224.110','10.198.224.111','10.198.224.112','10.198.224.113','10.198.224.114','10.198.224.115']
+devices = ['10.10.10.10','10.10.10.11','10.10.10.12']
 
 for device in devices:
-    api = IOSAPI('cisco_ios', device, 'cisco', 'cisco', 'cisco', 22)
+    api = IOSAPI('cisco_ios', device, 'cisco', 'disco', 'bisco', 22)
 
     if api:
         aaa_api = AaaAPI(api)
@@ -25,7 +25,8 @@ for device in devices:
         vlan_api = VlanAPI(api)
 
         print(device)
-        print(system_api.get_running_config())
+        pprint(aaa_api.get_local_users())
+        pprint(vlan_api.get_vlans())
         pprint(system_api.get_fqdn_name())
         pprint(int_api.get_interfaces_only())
-        print("\n\n")
+        pprint(stp_api.set_stp_mode('rapid-pvst'))
