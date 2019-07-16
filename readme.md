@@ -40,12 +40,12 @@ print(stp_api.set_stp_mode('nonstpmode'))
 
 Other examples:
 - Many output commands returned in JSON type format via TextFSM such as:
-> Interface Status
-> Show IP interface brief
-> Show spanning-tree bridge
-> Returning MAC address table
-> Show VLAN database and interface VLAN membership 'show vlan brief'
-> Display ACLs
+--Interface Status
+-- Show IP interface brief
+-- Show spanning-tree bridge
+-- Returning MAC address table
+-- Show VLAN database and interface VLAN membership 'show vlan brief'
+-- Display ACLs
 - Configure range of settings via Python like hostname, ip domain-name, interfaces, STP mode, VLANs, AAA Groups
 - Set Interface description for CDP neighbors
 
