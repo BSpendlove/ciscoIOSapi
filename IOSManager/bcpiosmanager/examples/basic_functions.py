@@ -10,23 +10,16 @@ from bcpIOSapi import VlanAPI
 
 from pprint import pprint
 
-devices = ['10.10.10.10','10.10.10.11','10.10.10.12']
+#Credentials and IP addresses used in this example script are purely for showcases examples with GNS3 IOSv and IOSvL2 images
+
+devices = ['192.168.110.80']
 
 for device in devices:
-    api = IOSAPI('cisco_ios', device, 'cisco', 'disco', 'bisco', 22)
+    api = IOSAPI('cisco_ios', device, 'cisco', 'cisco', 'cisco', 22, debug_mode=True)
 
     if api:
-        aaa_api = AaaAPI(api)
-        cdp_api = CdpAPI(api)
         int_api = InterfaceAPI(api)
-        macaddr_api = MacAddressAPI(api)
-        stp_api = StpAPI(api)
-        system_api = SystemAPI(api)
         vlan_api = VlanAPI(api)
 
-        print(device)
-        pprint(aaa_api.get_local_users())
-        pprint(vlan_api.get_vlans())
-        pprint(system_api.get_fqdn_name())
-        pprint(int_api.get_interfaces_only())
-        pprint(stp_api.set_stp_mode('rapid-pvst'))
+        pprint(int_api.replace_interfaces_access_vlan(100,110))
+        pprint(int_api.replace_interfaces_voice_vlan(50,120))

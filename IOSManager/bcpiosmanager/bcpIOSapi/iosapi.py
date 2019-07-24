@@ -91,7 +91,7 @@ class IOSAPI(object):
         output = session.send_config_set(command)
 
         if self.debug_mode:
-            self.bcp_log("debug", "(%s) .bcp_send_config_command() : Command sent - %s" %(__name__, command))
+            self.bcp_log("debug", "(%s) bcp_send_config_command() : Config set sent - %s" %(__name__, command))
 
         if "Invalid input detected" in output:
             self.bcp_log("info", "(%s) bcp_config_command() : Invalid input detected" %(__name__))
@@ -118,3 +118,16 @@ class IOSAPI(object):
                 textfsm_data.append(entry)
 
             return(textfsm_data)
+
+    def create_backup(self, filename, filetext):
+        nameformat = ("{0}-{1}-{2}-backup.txt".format(self.ip, datetime.now().strftime('%Y-%m-%d %H-%M-%S'), filename))
+
+        self.bcp_log("info", "(%s) create_backup() : Attempting to create backup file: %s" %(__name__, nameformat))
+
+        try:
+            file = open(nameformat, 'w')
+
+            file.write(str(filetext))
+            file.close()
+        except OSError as err:
+            self.bcp_log("info", "(%s) create_backup() : Attempt to create backup file failed... Reason:" %(__name__, err))

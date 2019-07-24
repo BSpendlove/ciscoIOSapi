@@ -1,0 +1,15 @@
+Value Required INTERFACE (\S+)
+Value SWITCHPORT_STATUS (\w+)
+Value ADMINISTRATIVE_MODE (\S+.*)
+Value OPERATIONAL_MODE (\S+.*)
+Value ACCESS_VLAN (\d+)
+Value ACCESS_VLAN_NAME (\w+)
+Value VOICE_VLAN (\S+)
+
+Start
+  ^Name:\s+${INTERFACE}
+  ^Switchport:\s+${SWITCHPORT_STATUS}
+  ^Administrative\s+Mode:\s+${ADMINISTRATIVE_MODE}
+  ^Operational\s+Mode:\s+${OPERATIONAL_MODE}
+  ^Access\s+Mode\s+VLAN:\s+${ACCESS_VLAN}\s+\(${ACCESS_VLAN_NAME}\)
+  ^Voice\s+VLAN:\s+${VOICE_VLAN}.* -> Record

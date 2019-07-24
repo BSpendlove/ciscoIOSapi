@@ -1,4 +1,6 @@
 from bcpIOSapi.iosapi import IOSAPI
+from ciscoconfparse import CiscoConfParse
+import json
 #from ciscoconfparse import CiscoConfParse Doesn't work with Python 3.7...
 
 class InterfaceAPI(object):
@@ -8,6 +10,69 @@ class InterfaceAPI(object):
         else:
             self.iosapi = IOSAPI()
      
+    #Replace commands
+    def replace_interfaces_access_vlan(self, current_vlan, new_vlan, backup=True):
+        all_interfaces = self.get_interfaces_switchport()
+
+        current_interface_config = self.get_interfaces_config()
+        interface_backup = []
+        
+        config_set = []
+
+        for interface in all_interfaces:
+            if interface['access_vlan'] == 'none':
+                pass
+
+            elif interface['administrative_mode'] == 'static access' and int(interface['access_vlan']) == current_vlan:
+
+                interface_backup.append(current_interface_config[interface['interface']])
+                print("Will change port: %s from ACCESS VLAN %s to ACCESS VLAN %s" %(interface['interface'], current_vlan, new_vlan))
+
+                config_set.append('interface %s' %(interface['interface']))
+                config_set.append(' switchport access vlan %s' %(new_vlan))
+
+                self.iosapi.bcp_log("info", "(%s) replace_interfaces_access_vlan() : Attempting to replace interface %s access VLAN from %s to %s" %(__name__, interface['interface'], current_vlan, new_vlan))
+
+        if backup:
+            config_format = {
+                'old_configuration' : interface_backup,
+                'new_configuration' : config_set }
+
+            self.iosapi.create_backup('replace_interfaces_access_vlan', json.dumps(config_format, indent=4, sort_keys=True))
+
+        return(self.iosapi.bcp_send_config_command(self.iosapi.netmiko_session, config_set))
+
+    def replace_interfaces_voice_vlan(self, current_vlan, new_vlan, backup=True):
+        all_interfaces = self.get_interfaces_switchport()
+
+        current_interface_config = self.get_interfaces_config()
+        interface_backup = []
+
+        config_set = []
+
+        for interface in all_interfaces:
+            if interface['voice_vlan'] == 'none':
+                pass
+
+            elif interface['administrative_mode'] == 'static access' and int(interface['voice_vlan']) == current_vlan:
+
+                interface_backup.append(current_interface_config[interface['interface']])
+                print("Will change port: %s from VOICE VLAN %s to VOICE VLAN %s" %(interface['interface'], current_vlan, new_vlan))
+
+                config_set.append('interface %s' %(interface['interface']))
+                config_set.append(' switchport voice vlan %s' %(new_vlan))
+
+                self.iosapi.bcp_log("info", "(%s) replace_interfaces_voice_vlan() : Attempting to replace interface %s voice VLAN from %s to %s" %(__name__, interface['interface'], current_vlan, new_vlan))
+
+        if backup:
+            config_format = {
+                'old_configuration' : interface_backup,
+                'new_configuration' : config_set }
+
+            self.iosapi.create_backup('replace_interfaces_voice_vlan', json.dumps(config_format, indent=4, sort_keys=True))
+
+        return(self.iosapi.bcp_send_config_command(self.iosapi.netmiko_session, config_set))
+
     #Set Commands
     def set_interface_ip(self, interface, ip, mask):
         cmds = ['interface %s' %(interface), 'ip address %s %s' %(ip, mask)]
@@ -55,7 +120,7 @@ class InterfaceAPI(object):
         self.iosapi.bcp_log("info", "(%s) get_interfaces() : Attempting to run show interfaces" %(__name__))
         return(self.iosapi.textfsm_extractor('cisco_ios_show_interfaces.template', output))
 
-    '''
+
     def get_interfaces_config(self):
         dict_interfaces = {}
         list_interface_config = []
@@ -78,7 +143,7 @@ class InterfaceAPI(object):
             dict_interfaces[interface['interface']] = list_interface_config
 
         return(dict_interfaces)
-    '''
+
 
     def get_interfaces_description(self):
         cmd = 'show interfaces description'
@@ -106,6 +171,29 @@ class InterfaceAPI(object):
         output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
         self.iosapi.bcp_log("info", "(%s) get_interfaces_status() : Attempting to get interfaces status" %(__name__))
         return(self.iosapi.textfsm_extractor('cisco_ios_show_interfaces_status.template', output))
+
+    def get_interfaces_switchport(self):
+        cmd = 'show interfaces switchport'
+
+        interface_mapper = {
+            'Gi' : 'GigabitEthernet',
+            'Fa' : 'FastEthernet',
+            'TenGi' : 'TenGigabitEthernet'
+            }
+
+        output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
+        self.iosapi.bcp_log("info", "(%s) get_interfaces_switchport() : Attempting to get interfaces switchport" %(__name__))
+
+        returned_output = self.iosapi.textfsm_extractor('cisco_ios_show_interfaces_switchport.template', output)
+        new_output = []
+
+        for interface in returned_output:
+            for item, value in interface_mapper.items():
+                interface['interface'] = interface['interface'].replace(item, value)
+            new_output.append(interface)
+
+        return(new_output)
+
 
     ''' Textfsm template is broke...
     def get_ip_int(self):
