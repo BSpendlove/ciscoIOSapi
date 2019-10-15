@@ -1,7 +1,6 @@
 from bcpIOSapi.iosapi import IOSAPI
 from ciscoconfparse import CiscoConfParse
 import json
-#from ciscoconfparse import CiscoConfParse Doesn't work with Python 3.7...
 
 class InterfaceAPI(object):
     def __init__(self, iosapi=None):
@@ -12,6 +11,17 @@ class InterfaceAPI(object):
      
     #Replace commands
     def replace_interfaces_access_vlan(self, current_vlan, new_vlan, backup=True):
+
+        """
+            Replaces all interfaces in a specified VLAN that are set as an administrative mode Access, to a different VLAN.
+            > current_vlan  -   VLAN to match access ports currently configured in this vlan
+            > new_vlan      -   VLAN to assign ports
+            > backup        -   Previous configuration will be saved for every interface in the script directory for the device (Default: True)
+
+            Example:
+            replace_interfaces_access_vlan(10,20)
+        """
+
         all_interfaces = self.get_interfaces_switchport()
 
         current_interface_config = self.get_interfaces_config()
@@ -43,6 +53,17 @@ class InterfaceAPI(object):
         return(self.iosapi.bcp_send_config_command(self.iosapi.netmiko_session, config_set))
 
     def replace_interfaces_voice_vlan(self, current_vlan, new_vlan, backup=True):
+        
+        """
+            Replaces the voice VLAN for all interfaces configured with the specified current voice vlan
+            > current_vlan  -   Current VOICE Vlan to Match
+            > new_vlan      -   VLAN to assign ports
+            > backup        -   Previous configuration will be saved for every interface in the script directory for the device (Default: True)
+
+            Example:
+            replace_interfaces_voice_vlan(101, 201)
+        """
+
         all_interfaces = self.get_interfaces_switchport()
 
         current_interface_config = self.get_interfaces_config()
@@ -75,6 +96,17 @@ class InterfaceAPI(object):
 
     #Set Commands
     def set_interface_ip(self, interface, ip, mask):
+
+        """
+            Configure IP Address on interface - Need to improve this function for checking etc..
+            > interface     -   Interface syntax
+            > ip            -   IP Address
+            > mask          -   Subnet Mask
+
+            Example:
+            set_interface_ip('vlan100', '169.254.100.254', '255.255.255.0')
+        """
+
         cmds = ['interface %s' %(interface), 'ip address %s %s' %(ip, mask)]
 
         output = self.iosapi.bcp_send_config_command(self.iosapi.netmiko_session, cmds)
@@ -82,6 +114,16 @@ class InterfaceAPI(object):
         return(output)
 
     def set_l2_interface_mode(self, interface, mode):
+
+        """
+            Set interface mode to either Access or Trunk
+            > interface     -   Interface Syntax
+            > mode          -   access or trunk
+
+            Example:
+            set_l2_interface_mode('g1/0/3', 'access')
+        """
+
         modes = ['access', 'trunk']
 
         if mode not in modes:
@@ -100,6 +142,17 @@ class InterfaceAPI(object):
             return(output)
 
     def set_l2_stp_portfast(self, interface, enabled=True, mode='access'):
+
+        """
+            Set Portfast on either Access port or Trunk port (Need to improve this function for additional checking)
+            > interface     -   Interface Syntax
+            > enabled       -   Enable Portfast
+            > mode          -   access or trunk (Default: access)
+
+            Example:
+            set_l2_stp_portfast('g1/0/2', True, 'access')
+        """
+
         cmds = ['interface %s' %(interface)]
 
         if mode == 'access':
@@ -114,6 +167,41 @@ class InterfaceAPI(object):
 
     #Get Commands
     def get_interfaces(self):
+
+        """
+            Returns JSON type format for interfaces
+
+            Example:
+            get_interfaces()
+
+            { 
+                'address': '0cd6.448e.780f',
+                'bandwidth': '1000000 Kbit',
+                'bia': '0cd6.448e.780f',
+                'delay': '10 usec',
+                'description': '',
+                'duplex': 'Full-duplex',
+                'encapsulation': 'ARPA',
+                'hardware_type': 'iGbE',
+                'input_errors': '0',
+                'input_packets': '0',
+                'input_rate': '0',
+                'interface': 'GigabitEthernet3/3',
+                'ip_address': '',
+                'last_input': 'never',
+                'last_output': '00:00:00',
+                'last_output_hang': 'never',
+                'link_status': 'up',
+                'mtu': '1500',
+                'output_errors': '0',
+                'output_packets': '4530',
+                'output_rate': '0',
+                'protocol_status': 'up (connected)',
+                'queue_strategy': 'fifo',
+                'speed': 'Auto-speed'
+            }
+        """
+
         cmd = 'show interfaces'
 
         output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
@@ -122,6 +210,35 @@ class InterfaceAPI(object):
 
 
     def get_interfaces_config(self):
+
+        """
+            Returns Dictionary with List of child configuration for every port (using CiscoConfParse)
+
+            Example:
+            get_interfaces_config()
+
+            {
+                'GigabitEthernet1/1': ['interface GigabitEthernet1/1',
+                                        ' media-type rj45',
+                                        ' negotiation auto',
+                                        ' switchport mode access'],
+                 'GigabitEthernet1/2': ['interface GigabitEthernet1/2',
+                                        ' description ** Link to API Server **',
+                                        ' switchport trunk allowed vlan 101-104,200',
+                                        ' switchport trunk encapsulation dot1q',
+                                        ' switchport trunk native vlan 101',
+                                        ' switchport mode trunk',
+                                        ' media-type rj45',
+                                        ' negotiation auto',
+                                        ' ip dhcp snooping trust'],
+                'Tunnel10': ['interface Tunnel10',
+                                        ' ip address 169.254.10.1 255.255.255.252',
+                                        ' tunnel source GigabitEthernet0/0',
+                                        ' tunnel key 100',
+                                        ' tunnel protection ipsec profile vpn_s03'],
+                }
+        """
+
         dict_interfaces = {}
         list_interface_config = []
         
@@ -146,6 +263,33 @@ class InterfaceAPI(object):
 
 
     def get_interfaces_description(self):
+
+        """
+            Returns JSON type format for interface descriptions and protocol/status
+
+            Example:
+            get_interfaces_description()
+
+            {
+                'descrip': '', 
+                'port': 'Gi0/0', 
+                'protocol': 'up', 
+                'status': 'up'
+            },
+            {
+                'descrip': '',
+                'port': 'Gi0/1',
+                'protocol': 'up',
+                'status': 'up'
+            },
+            {
+                'descrip': '** Link to API Server **',
+                'port': 'Gi1/2',
+                'protocol': 'up',
+                'status': 'up'
+            }
+        """
+
         cmd = 'show interfaces description'
 
         output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
@@ -153,6 +297,24 @@ class InterfaceAPI(object):
         return(self.iosapi.textfsm_extractor('cisco_ios_show_interfaces_description.template', output))
 
     def get_interfaces_only(self):
+
+        """
+            Returns List of interfaces that exist on the device (Physical and Virtual)
+
+            Example:
+            get_interfaces_only()
+
+            {['GigabitEthernet3/0',
+                'GigabitEthernet3/1',
+                'GigabitEthernet3/2',
+                'GigabitEthernet3/3',
+                'Loopback0',
+                'Loopback1',
+                'Tunnel10',
+                'Vlan100',
+                'Vlan101']}
+        """
+
         interfaces = {}
         interface_list = []
 
@@ -166,6 +328,33 @@ class InterfaceAPI(object):
         return(interfaces)
 
     def get_interfaces_status(self):
+
+        """
+            Returns JSON type format for interface status
+
+            Example:
+            get_interfaces_status()
+
+            {
+                 'duplex': 'a-full',
+                 'name': '',
+                 'port': 'Gi0/0',
+                 'speed': 'auto',
+                 'status': 'connected',
+                 'type': 'RJ45',
+                 'vlan': 'routed'
+             },
+             {
+                 'duplex': 'a-full',
+                 'name': '',
+                 'port': 'Gi0/1',
+                 'speed': 'auto',
+                 'status': 'connected',
+                 'type': 'RJ45',
+                 'vlan': '1'
+              }
+        """
+
         cmd = 'show interfaces status'
 
         output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
@@ -173,6 +362,33 @@ class InterfaceAPI(object):
         return(self.iosapi.textfsm_extractor('cisco_ios_show_interfaces_status.template', output))
 
     def get_interfaces_switchport(self):
+
+        """
+            Returns JSON type format for interface switchports
+
+            Example:
+            get_interfaces_switchport()
+
+                {
+                     'access_vlan': '1',
+                     'access_vlan_name': 'default',
+                     'administrative_mode': 'dynamic auto',
+                     'interface': 'GigabitEthernet1/1',
+                     'operational_mode': 'static access',
+                     'switchport_status': 'Enabled',
+                     'voice_vlan': 'none'
+                  },
+                 {
+                     'access_vlan': '1',
+                     'access_vlan_name': 'default',
+                     'administrative_mode': 'trunk',
+                     'interface': 'GigabitEthernet1/2',
+                     'operational_mode': 'trunk',
+                     'switchport_status': 'Enabled',
+                     'voice_vlan': 'none'
+                }
+        """
+
         cmd = 'show interfaces switchport'
 
         interface_mapper = {
@@ -194,16 +410,31 @@ class InterfaceAPI(object):
 
         return(new_output)
 
-
-    ''' Textfsm template is broke...
-    def get_ip_int(self):
-        cmd = 'show ip interface'
-        output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
-        return(self.iosapi.textfsm_extractor('cisco_ios_show_ip_interface.template', output))
-    '''
-
     def get_ip_int_brief(self):
+
+        """
+            Returns JSON type format for show ip int brief
+
+            Example:
+            get_ip_int_brief()
+
+            {
+                'intf': 'GigabitEthernet0/0',
+                'ipaddr': '169.254.10.254',
+                'proto': 'up',
+                'status': 'up'
+            },
+            {
+                'intf': 'GigabitEthernet0/1',
+                'ipaddr': 'unassigned',
+                'proto': 'up',
+                'status': 'up'
+            }
+
+        """
+
         cmd = 'show ip interface brief'
         output = self.iosapi.bcp_send_command(self.iosapi.netmiko_session, cmd)
         self.iosapi.bcp_log("info", "(%s) get_ip_int_brief() : Attempting to run show ip int brief" %(__name__))
+
         return(self.iosapi.textfsm_extractor('cisco_ios_show_ip_interface_brief.template', output))

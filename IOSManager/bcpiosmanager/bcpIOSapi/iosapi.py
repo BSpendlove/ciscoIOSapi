@@ -127,7 +127,11 @@ class IOSAPI(object):
         try:
             file = open(nameformat, 'w')
 
-            file.write(str(filetext))
+            file.write(filetext)
             file.close()
         except OSError as err:
             self.bcp_log("info", "(%s) create_backup() : Attempt to create backup file failed... Reason:" %(__name__, err))
+
+    def output_file(self, filename, filetext):
+        with open(filename, 'w') as outputFile:
+            outputFile.write(filetext)
